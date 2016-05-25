@@ -22,6 +22,22 @@
 	-fx-text-fill: white;
 }
 
+#errorTextField
+{
+	-fx-background-color: black;
+	-fx-font-weight: bold;
+	-fx-text-fill: red;
+	-fx-text-alignment: center ;
+}
+
+#eventVenue
+{
+	-fx-background-color: black;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+	-fx-text-alignment: center ;
+}
+
 #eventProperties
 {
 	-fx-text-alignment: center ;

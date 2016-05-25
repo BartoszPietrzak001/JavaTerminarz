@@ -48,6 +48,10 @@ public class MainController implements Initializable {
 	private ComboBox <Integer> minuteBox;
 	@FXML 
 	private TextField eventDescription;
+	@FXML 
+	private TextField eventVenue;
+	@FXML
+	private TextField errorTextField;
 	@FXML
 	private ListView <CallendarEvent> eventListView;
 	@FXML
@@ -100,23 +104,53 @@ public class MainController implements Initializable {
 	
 	public void addEvent(ActionEvent event) throws NullDateException
 	{
-		if (calendar.getValue() == null)
-		{
-			eventDescription.setText(new NullDateException().toString());
+		if (calendar.getValue() == null){
+			errorTextField.setText(new NullDateException().toString());
 			return;
 		}
-		else if (eventDescription.getText().equals("") && minute == null && hour == null)
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), calendar.getValue().getYear()));
-		else if (eventDescription.getText().equals("") && minute == null)
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour));
+		else if (eventDescription.getText().equals("") && minute == null && hour == null && eventVenue.getText().equals(""))
+			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), 
+					calendar.getValue().getYear()));
+		
+		else if (eventDescription.getText().equals("") && minute == null && eventVenue.getText().equals(""))
+			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), 
+					calendar.getValue().getYear(), hour));
+		
+		else if (eventDescription.getText().equals("") && eventVenue.getText().equals(""))
+			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), 
+					calendar.getValue().getYear(), hour, minute));
+		
+		else if (minute == null && hour == null && eventVenue.getText().equals(""))
+			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), 
+					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), eventDescription.getText()));
+		
 		else if (eventDescription.getText().equals(""))
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute));
-		else if (minute == null && hour == null)
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), calendar.getValue().getYear(), eventDescription.getText()));
-		else if (minute == null)
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, eventDescription.getText()));
+			eventList.add(new CallendarEvent(eventVenue.getText(), calendar.getValue().getDayOfMonth(), 
+					calendar.getValue().getMonthValue(), calendar.getValue().getYear()));
+		
+		else if (minute == null && eventVenue.getText().equals(""))
+			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), 
+					calendar.getValue().getYear(), hour, eventDescription.getText()));
+		
+		else if (minute == null && eventDescription.getText().equals(""))
+			eventList.add(new CallendarEvent(eventVenue.getText(), calendar.getValue().getDayOfMonth(), 
+					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour));
+		
+		else if (eventVenue.getText().equals("") && eventDescription.getText().equals(""))
+			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), 
+					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute));
+		
+		else if (eventVenue.getText().equals(""))
+			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), 
+					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute, eventDescription.getText()));
+		
+		else if (eventDescription.getText().equals(""))
+			eventList.add(new CallendarEvent(eventVenue.getText(), calendar.getValue().getDayOfMonth(), 
+					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute));
+		
 		else
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute, eventDescription.getText()));
+			eventList.add(new CallendarEvent(eventVenue.getText(), calendar.getValue().getDayOfMonth(), 
+					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute, eventDescription.getText()));
 	}
 
 	@Override
