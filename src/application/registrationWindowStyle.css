@@ -1,0 +1,13 @@
+.root
+{
+	-fx-background-color: black   ;
+}
+
+#communicateLabel
+{
+	-fx-text-alignment: center ;
+	-fx-font-size: 15px;
+	-fx-background-color: black;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+}
