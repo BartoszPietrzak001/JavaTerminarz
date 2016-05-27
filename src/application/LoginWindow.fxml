@@ -11,7 +11,7 @@
    <children>
       <AnchorPane layoutX="-7.0" layoutY="-67.0" prefHeight="200.0" prefWidth="200.0" />
       <Button fx:id="loginButton" layoutX="194.0" layoutY="503.0" mnemonicParsing="false" onAction="#login" prefHeight="31.0" prefWidth="214.0" text="Login" />
-      <Button fx:id="registerButton" layoutX="189.0" layoutY="596.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="223.0" text="Register" />
+      <Button fx:id="registerButton" layoutX="189.0" layoutY="596.0" mnemonicParsing="false" onAction="#registrationWindow" prefHeight="31.0" prefWidth="223.0" text="Register" />
       <TextField fx:id="userNameField" layoutX="208.0" layoutY="185.0" promptText="UserName" />
       <PasswordField fx:id="passwordField" layoutX="208.0" layoutY="276.0" promptText="Password" />
       <Label fx:id="statusLabel" alignment="CENTER" layoutX="208.0" layoutY="133.0" prefHeight="21.0" prefWidth="187.0" text="Current Login Status" textAlignment="CENTER" textFill="#eb0505" />

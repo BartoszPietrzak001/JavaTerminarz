@@ -1,26 +1,59 @@
 package application;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.net.URL;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.ResourceBundle;
 
-public class DataBaseConnection {
+import org.sqlite.SQLiteConfig;
 
-	Connection connection = null;
+import javafx.event.ActionEvent;
+import javafx.fxml.Initializable;
+
+public class UserDataBaseConnection {
+
 	Statement stmt = null;
-//	try{
-//		Class.forName("org.sqlite.JDBC");
-//		connection=DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Bartek\\workspace\\DataBase.sqlite");
-//		System.out.println("Polaczono z baza danych");
-//	  stmt = connection.createStatement();
-//	  System.out.println("CREATE TABLE  " + "Obiekt" + " (" + query + ")");
-//      String sql = "CREATE TABLE  " + "Obiekt" +  " (" + query + ")";
-//      stmt.executeUpdate(sql);
-//      stmt.close();
-//      connection.close();
-//    } catch ( Exception e ) {
-//      System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-//      System.exit(0);
-//    }
-//    System.out.println("Table created successfully");
-//	return null;
+	Connection connection = null;
+	String dbURL = "jdbc:sqlite:product.db";
+    
+	public Connection connectLogin(String path) throws FileNotFoundException{
+	try ( Connection conn = DriverManager.getConnection(dbURL);) {
+		File f = new File(path);
+		if (f.exists()){
+			Class.forName("org.sqlite.JDBC");
+			SQLiteConfig config = new SQLiteConfig();
+			config.setReadOnly(true);
+			connection=DriverManager.getConnection("jdbc:sqlite:" + path, config.toProperties());
+			System.out.println("Polaczono z baza danych");
+			stmt = connection.createStatement();
+		    return connection;
+		}
+		else throw new Exception();
+    } catch ( Exception e ) {
+      throw new FileNotFoundException();
+    }
 }
+	
+	public Connection connectRegister(String path) throws FileNotFoundException{
+		try ( Connection conn = DriverManager.getConnection(dbURL);) {
+			File f = new File(path);
+			if (f.exists()){
+				Class.forName("org.sqlite.JDBC");
+				SQLiteConfig config = new SQLiteConfig();
+				config.setReadOnly(false);
+				connection=DriverManager.getConnection("jdbc:sqlite:" + path, config.toProperties());
+				System.out.println("Polaczono z baza danych");
+				stmt = connection.createStatement();
+			    return connection;
+			}
+			else throw new Exception();
+	    } catch ( Exception e ) {
+	      throw new FileNotFoundException();
+	    }
+	}
+}
+
