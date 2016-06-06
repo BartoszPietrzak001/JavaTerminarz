@@ -1,7 +1,7 @@
 package application;
 
 public class NullDateException extends Exception {
-	
+
 	@Override
 	public String toString()
 	{

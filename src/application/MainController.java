@@ -1,7 +1,16 @@
 package application;
 
+import java.beans.XMLEncoder;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -13,35 +22,40 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class MainController implements Initializable {
 	@FXML
-	private Button logOutButton;
+	private MenuItem logOutButton;
+	@FXML
+	private MenuItem closeButton;
+	@FXML
+	private MenuItem aboutButton;
+	@FXML
+	private Label aboutLabel;
 	
-	private int day, month, year;
-	private Integer hour = null, minute = null;
+	private LocalDate localDate;
+	private LocalTime localTime;
+	private LocalDateTime localDateTime;
 	
-	private ObservableList <Integer> dayList = FXCollections.observableArrayList();
-	private ObservableList <Integer> monthList = FXCollections.observableArrayList();
-	private ObservableList <Integer> yearList = FXCollections.observableArrayList();
+	private XMLEncoder xmlencoder;
+	
 	private ObservableList <Integer> hourList = FXCollections.observableArrayList();
 	private ObservableList <Integer> minuteList = FXCollections.observableArrayList();
 	private ObservableList <CallendarEvent> eventList = FXCollections.observableArrayList();
-	
-	@FXML
-	private ComboBox <Integer> dayBox;
-	@FXML
-	private ComboBox <Integer> monthBox;
-	@FXML
-	private ComboBox <Integer> yearBox;
+
 	@FXML
 	private ComboBox <Integer> hourBox;
 	@FXML
@@ -60,46 +74,59 @@ public class MainController implements Initializable {
 	
 	public void logOut(ActionEvent event)
 	{
-		Stage stage = (Stage) logOutButton.getScene().getWindow();
-		
-		onLogOut();
-		
-		stage.close();
+		if (onLogOut() == true)
+		{
+			Stage stage = (Stage) calendar.getScene().getWindow();
+			stage.close();
+		}
+		else return;
 	}
 	
-	public void setDay(ActionEvent event){
-		day = dayBox.getValue();
-	}
-	
-	public void setMonth(ActionEvent event){
-		month = monthBox.getValue();
-	}
-	
-	public void setYear(ActionEvent event){
-		year = yearBox.getValue();
-	}
-	
-	public void setHour(ActionEvent event){
-		hour = new Integer(hourBox.getValue());
-	}
-	
-	public void setMinute(ActionEvent event){
-		minute = new Integer(minuteBox.getValue());
-	}
-	
-	public void onLogOut()
+	public void close(ActionEvent event)
 	{
+		System.exit(0);
+	}
+	
+	public void onAboutClick(ActionEvent event)
+	{
+		Stage primaryStage = new Stage();
+		Parent root;
 		try {
-			Stage primaryStage = new Stage();
-			Parent root = FXMLLoader.load(getClass().getResource("/application/LoginWindow.fxml"));
+			root = FXMLLoader.load(getClass().getResource("/application/AboutWindow.fxml"));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("LoginWindowStyle.css").toExternalForm());
 			primaryStage.setScene(scene);
-			primaryStage.show();				
-		} catch(Exception e) {
-			e.printStackTrace();
-		
+			primaryStage.show();	
+		} catch (IOException e) {
+			errorTextField.setText(e.getMessage());
 		}
+			
+	}
+	
+	public boolean onLogOut()
+	{
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Confirmation");
+		alert.setHeaderText("Logout confirmation");
+		alert.setContentText("Are you sure you want to logout?");
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.OK){
+			try {
+				Stage primaryStage = new Stage();
+				Parent root = FXMLLoader.load(getClass().getResource("/application/LoginWindow.fxml"));
+				Scene scene = new Scene(root);
+				scene.getStylesheets().add(getClass().getResource("LoginWindowStyle.css").toExternalForm());
+				primaryStage.setScene(scene);
+				primaryStage.show();				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			finally {return true;}
+		} else if (result.get() == ButtonType.CANCEL){
+		    return false;
+		}
+		return true;
 	}
 	
 	public void addEvent(ActionEvent event) throws NullDateException
@@ -108,70 +135,57 @@ public class MainController implements Initializable {
 			errorTextField.setText(new NullDateException().toString());
 			return;
 		}
-		else if (eventDescription.getText().equals("") && minute == null && hour == null && eventVenue.getText().equals(""))
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), 
-					calendar.getValue().getYear()));
-		
-		else if (eventDescription.getText().equals("") && minute == null && eventVenue.getText().equals(""))
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), 
-					calendar.getValue().getYear(), hour));
-		
-		else if (eventDescription.getText().equals("") && eventVenue.getText().equals(""))
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), 
-					calendar.getValue().getYear(), hour, minute));
-		
-		else if (minute == null && hour == null && eventVenue.getText().equals(""))
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), 
-					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), eventDescription.getText()));
-		
-		else if (eventDescription.getText().equals(""))
-			eventList.add(new CallendarEvent(eventVenue.getText(), calendar.getValue().getDayOfMonth(), 
-					calendar.getValue().getMonthValue(), calendar.getValue().getYear()));
-		
-		else if (minute == null && eventVenue.getText().equals(""))
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), calendar.getValue().getMonthValue(), 
-					calendar.getValue().getYear(), hour, eventDescription.getText()));
-		
-		else if (minute == null && eventDescription.getText().equals(""))
-			eventList.add(new CallendarEvent(eventVenue.getText(), calendar.getValue().getDayOfMonth(), 
-					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour));
-		
-		else if (eventVenue.getText().equals("") && eventDescription.getText().equals(""))
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), 
-					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute));
-		
-		else if (eventVenue.getText().equals(""))
-			eventList.add(new CallendarEvent(calendar.getValue().getDayOfMonth(), 
-					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute, eventDescription.getText()));
-		
-		else if (eventDescription.getText().equals(""))
-			eventList.add(new CallendarEvent(eventVenue.getText(), calendar.getValue().getDayOfMonth(), 
-					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute));
 		
 		else
-			eventList.add(new CallendarEvent(eventVenue.getText(), calendar.getValue().getDayOfMonth(), 
-					calendar.getValue().getMonthValue(), calendar.getValue().getYear(), hour, minute, eventDescription.getText()));
+		{
+			localDate = LocalDate.of(calendar.getValue().getYear(), calendar.getValue().getMonthValue(), 
+					calendar.getValue().getDayOfMonth());
+			
+			if (hourBox.getValue() == null && minuteBox.getValue() == null)
+			{
+				if (LocalTime.now().getHour() == 23) 
+					localTime = LocalTime.of(0, 0);
+				else
+					localTime = LocalTime.of(LocalTime.now().getHour() + 1, 0);
+				// plushour
+			}
+
+			else if (hourBox.getValue() == null)
+				localTime = LocalTime.of(LocalTime.now().getHour() + 1, minuteBox.getValue());
+			else if (minuteBox.getValue() == null)
+				localTime = LocalTime.of(hourBox.getValue(), 0);
+			else
+				localTime = LocalTime.of(hourBox.getValue(), minuteBox.getValue());
+			
+			localDateTime = LocalDateTime.of(localDate, localTime);
+			eventList.add(new CallendarEvent(localDateTime, eventDescription.getText(), eventVenue.getText()));
+		}
+	}
+	
+	public void serializeEvents(ActionEvent e)
+	{
+		try {
+			xmlencoder = new XMLEncoder(new BufferedOutputStream(
+			        new FileOutputStream("Events.xml")));
+			xmlencoder.writeObject(eventList.get(0));
+		} catch (FileNotFoundException e1) {
+			errorTextField.setText("Serialization error");
+		}
+		finally
+		{
+			xmlencoder.close();
+		}
 	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		for (int i=1; i<=31; i++)
-			dayList.add(Integer.valueOf(i));
-		for (int i=1; i<=12; i++)
-			monthList.add(Integer.valueOf(i));
-		for (int i=2016; i<=2050; i++)
-			yearList.add(Integer.valueOf(i));
 		for (int i=0; i<=23; i++)
 			hourList.add(Integer.valueOf(i));
 		for (int i=0; i<=59; i++)
 			minuteList.add(Integer.valueOf(i));
-		
-		dayBox.setItems(dayList);
-		monthBox.setItems(monthList);
-		yearBox.setItems(yearList);
+
 		hourBox.setItems(hourList);
 		minuteBox.setItems(minuteList);
-		eventListView.setItems(eventList);
-		
+		eventListView.setItems(eventList);		
 	}
 }

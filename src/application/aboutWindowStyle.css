@@ -1,0 +1,10 @@
+.root
+{
+	-fx-background-color: black   ;
+}
+
+#aboutLabel
+{
+	-fx-font-weight: bold;
+	-fx-background-color: black;
+}

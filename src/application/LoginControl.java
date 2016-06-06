@@ -29,8 +29,6 @@ public class LoginControl {
 		UserDataBaseConnection conn = new UserDataBaseConnection();
 		try {
 			if (conn.connectLogin("Users.sqlite") != null){
-				String query = "SELECT * FROM users WHERE UserName=" + userNameField.getText();
-				conn.stmt.executeUpdate(query);
 				if (userNameField.getText().equals("user") && passwordField.getText().equals("pass"))
 				{
 					statusLabel.setText("Login Success");
@@ -48,10 +46,7 @@ public class LoginControl {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	}
 	
 	public void loginSuccessed()

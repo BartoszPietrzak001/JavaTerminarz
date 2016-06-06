@@ -46,27 +46,26 @@ public class RegistrationController implements Initializable {
 	
 	public void submit(ActionEvent event)
 	{
-		UserDataBaseConnection conn = new UserDataBaseConnection();
 		try {
+		if (userNameLabel.getText().isEmpty() || passwordLabel.getText().isEmpty() || emailLabel.getText().isEmpty())
+			errorLabel.setText("All labels have to be filled with data!");
+		else{
+		UserDataBaseConnection conn = new UserDataBaseConnection();
 			if(conn.connectRegister("Users.sqlite") != null){
-				if (userNameLabel.getText().isEmpty() || passwordLabel.getText().isEmpty() || emailLabel.getText().isEmpty())
-					throw new EmptyLabelException();
-				else{
+
 				String query = "INSERT INTO users(UserName, Password, Email) VALUES ('" +
 						userNameLabel.getText() + "','" + passwordLabel.getText() + "','" + 
 						emailLabel.getText() + "')";
 
 				conn.stmt.getConnection().createStatement();
-				conn.stmt.executeUpdate(query);
-				}
+				conn.stmt.executeUpdate(query);	
 			}
-		} catch (FileNotFoundException e) {
+		}
+		}catch (FileNotFoundException e) {
 			errorLabel.setText(e.getMessage());
 		} catch (SQLException e) {
 			errorLabel.setText(e.getMessage());
-		} catch (EmptyLabelException e) {
-			errorLabel.setText(e.toString());
-		}
+		} 
 	}
 
 	@Override

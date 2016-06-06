@@ -5,6 +5,9 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.Bloom?>
 <?import javafx.scene.effect.Light.Distant?>
@@ -14,7 +17,7 @@
 
 <AnchorPane fx:id="root" prefHeight="800" prefWidth="600" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <children>
-      <Button fx:id="setEvent" layoutX="252.0" layoutY="434.0" mnemonicParsing="false" onAction="#addEvent" text="Set Event">
+      <Button fx:id="setEvent" layoutX="242.0" layoutY="467.0" mnemonicParsing="false" onAction="#addEvent" text="Set Event">
          <effect>
             <Bloom>
                <input>
@@ -29,17 +32,43 @@
                </input>
             </Bloom>
          </effect></Button>
-      <Button fx:id="logOutButton" layoutX="485.0" layoutY="14.0" mnemonicParsing="false" onAction="#logOut" text="LogOut" />
-      <ComboBox fx:id="dayBox" layoutX="50.0" layoutY="85.0" onAction="#setDay" prefHeight="31.0" prefWidth="197.0" promptText="Day" />
-      <ComboBox fx:id="monthBox" layoutX="50.0" layoutY="138.0" onAction="#setMonth" prefHeight="31.0" prefWidth="197.0" promptText="Month" />
-      <ComboBox fx:id="yearBox" layoutX="51.0" layoutY="189.0" onAction="#setYear" prefHeight="31.0" prefWidth="197.0" promptText="Year" />
-      <ComboBox fx:id="hourBox" layoutX="50.0" layoutY="242.0" onAction="#setHour" prefHeight="31.0" prefWidth="86.0" promptText="HH" />
-      <ComboBox fx:id="minuteBox" layoutX="162.0" layoutY="242.0" onAction="#setMinute" prefHeight="31.0" prefWidth="86.0" promptText="MM" />
-      <TextField fx:id="eventDescription" layoutX="30.0" layoutY="303.0" prefHeight="40.0" prefWidth="528.0" promptText="Description" />
+      <TextField fx:id="eventDescription" layoutX="36.0" layoutY="345.0" prefHeight="40.0" prefWidth="528.0" promptText="Description" />
       <Label alignment="CENTER" layoutX="141.0" layoutY="246.0" prefHeight="31.0" prefWidth="18.0" text=":" textFill="WHITE" />
-      <ListView fx:id="eventListView" layoutX="64.0" layoutY="507.0" prefHeight="250.0" prefWidth="491.0" />
-      <DatePicker fx:id="calendar" layoutX="300.0" layoutY="85.0" prefHeight="189.0" prefWidth="260.0" />
-      <TextField fx:id="eventVenue" layoutX="29.0" layoutY="369.0" prefHeight="40.0" prefWidth="528.0" promptText="Venue" />
-      <TextField fx:id="errorTextField" layoutX="43.0" layoutY="30.0" prefHeight="31.0" prefWidth="416.0" />
+      <ListView fx:id="eventListView" layoutX="54.0" layoutY="523.0" prefHeight="250.0" prefWidth="491.0" />
+      <DatePicker fx:id="calendar" editable="false" layoutX="46.0" layoutY="81.0" prefHeight="189.0" prefWidth="528.0" promptText="Choose date" />
+      <TextField fx:id="eventVenue" layoutX="35.0" layoutY="411.0" prefHeight="40.0" prefWidth="528.0" promptText="Venue" />
+      <TextField fx:id="errorTextField" editable="false" layoutX="91.0" layoutY="41.0" prefHeight="31.0" prefWidth="416.0" />
+      <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="600.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Calendar">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="Save" />
+                  <MenuItem mnemonicParsing="false" text="Import" />
+                  <MenuItem fx:id="serializeButton" mnemonicParsing="false" onAction="#serializeEvents" text="Export" />
+              <MenuItem fx:id="closeButton" mnemonicParsing="false" onAction="#close" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="Edit Event" />
+                  <MenuItem mnemonicParsing="false" text="Copy Event" />
+              <MenuItem mnemonicParsing="false" text="Delete Event" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Options">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Settings..." />
+                  <MenuItem fx:id="logOutButton" mnemonicParsing="false" onAction="#logOut" text="LogOut" />
+              </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem fx:id="aboutButton" mnemonicParsing="false" onAction="#onAboutClick" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ComboBox fx:id="hourBox" layoutX="66.0" layoutY="289.0" prefHeight="31.0" prefWidth="193.0" promptText="HH" />
+      <ComboBox fx:id="minuteBox" layoutX="324.0" layoutY="289.0" prefHeight="31.0" prefWidth="193.0" promptText="MM" />
    </children>
 </AnchorPane>
