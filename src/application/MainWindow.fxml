@@ -9,36 +9,17 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.Bloom?>
-<?import javafx.scene.effect.Light.Distant?>
-<?import javafx.scene.effect.Lighting?>
-<?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" prefHeight="800" prefWidth="600" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<AnchorPane fx:id="root" prefHeight="560.0" prefWidth="1107.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
    <children>
-      <Button fx:id="setEvent" layoutX="242.0" layoutY="467.0" mnemonicParsing="false" onAction="#addEvent" text="Set Event">
-         <effect>
-            <Bloom>
-               <input>
-                  <Lighting>
-                     <bumpInput>
-                        <Shadow />
-                     </bumpInput>
-                     <light>
-                        <Light.Distant />
-                     </light>
-                  </Lighting>
-               </input>
-            </Bloom>
-         </effect></Button>
-      <TextField fx:id="eventDescription" layoutX="36.0" layoutY="345.0" prefHeight="40.0" prefWidth="528.0" promptText="Description" />
+      <TextField fx:id="eventDescription" layoutX="28.0" layoutY="380.0" prefHeight="40.0" prefWidth="528.0" promptText="Description" />
       <Label alignment="CENTER" layoutX="141.0" layoutY="246.0" prefHeight="31.0" prefWidth="18.0" text=":" textFill="WHITE" />
-      <ListView fx:id="eventListView" layoutX="54.0" layoutY="523.0" prefHeight="250.0" prefWidth="491.0" />
-      <DatePicker fx:id="calendar" editable="false" layoutX="46.0" layoutY="81.0" prefHeight="189.0" prefWidth="528.0" promptText="Choose date" />
-      <TextField fx:id="eventVenue" layoutX="35.0" layoutY="411.0" prefHeight="40.0" prefWidth="528.0" promptText="Venue" />
+      <ListView fx:id="eventListView" layoutX="602.0" layoutY="167.0" onMouseClicked="#showEvent" prefHeight="250.0" prefWidth="491.0" />
+      <DatePicker fx:id="calendar" layoutX="46.0" layoutY="81.0" prefHeight="189.0" prefWidth="491.0" promptText="Choose date" />
+      <TextField fx:id="eventVenue" layoutX="28.0" layoutY="427.0" prefHeight="40.0" prefWidth="528.0" promptText="Venue" />
       <TextField fx:id="errorTextField" editable="false" layoutX="91.0" layoutY="41.0" prefHeight="31.0" prefWidth="416.0" />
-      <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="600.0">
+      <MenuBar layoutY="-2.0" prefHeight="32.0" prefWidth="1107.0">
         <menus>
           <Menu mnemonicParsing="false" text="Calendar">
             <items>
@@ -50,14 +31,14 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-                  <MenuItem mnemonicParsing="false" text="Edit Event" />
-                  <MenuItem mnemonicParsing="false" text="Copy Event" />
-              <MenuItem mnemonicParsing="false" text="Delete Event" />
+                  <MenuItem mnemonicParsing="false" onAction="#editEvent" text="Edit Event" />
+                  <MenuItem mnemonicParsing="false" onAction="#copyEvent" text="Copy Event" />
+              <MenuItem mnemonicParsing="false" onAction="#deleteEvent" text="Delete Event" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Options">
               <items>
-                <MenuItem mnemonicParsing="false" text="Settings..." />
+                <MenuItem mnemonicParsing="false" onAction="#openSettingsWindow" text="Settings..." />
                   <MenuItem fx:id="logOutButton" mnemonicParsing="false" onAction="#logOut" text="LogOut" />
               </items>
             </Menu>
@@ -70,5 +51,10 @@
       </MenuBar>
       <ComboBox fx:id="hourBox" layoutX="66.0" layoutY="289.0" prefHeight="31.0" prefWidth="193.0" promptText="HH" />
       <ComboBox fx:id="minuteBox" layoutX="324.0" layoutY="289.0" prefHeight="31.0" prefWidth="193.0" promptText="MM" />
+      <TextField fx:id="eventDate" editable="false" layoutX="28.0" layoutY="334.0" prefHeight="40.0" prefWidth="528.0" promptText="Date" />
+      <Button fx:id="deleteButton" layoutX="742.0" layoutY="123.0" mnemonicParsing="false" onAction="#deleteEvent" prefHeight="31.0" prefWidth="88.0" text="Delete" />
+      <Button fx:id="editButton" layoutX="872.0" layoutY="123.0" mnemonicParsing="false" onAction="#editEvent" prefHeight="31.0" prefWidth="88.0" text="Edit" />
+      <Button fx:id="copyButton" layoutX="1000.0" layoutY="123.0" mnemonicParsing="false" onAction="#copyEvent" prefHeight="31.0" prefWidth="88.0" text="Copy" />
+      <Button fx:id="addButton" layoutX="607.0" layoutY="123.0" mnemonicParsing="false" onAction="#addEvent" prefHeight="31.0" prefWidth="88.0" text="Add" />
    </children>
 </AnchorPane>

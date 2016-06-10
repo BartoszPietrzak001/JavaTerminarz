@@ -1,0 +1,38 @@
+#titleLabel
+{
+	-fx-text-alignment: center;
+	-fx-font-weight: bold;
+	-fx-text-fill: white;
+	-fx-background-color: grey;
+}
+
+.root
+{
+	-fx-background-color: grey;
+}
+
+#pathLabel
+{
+	-fx-text-alignment: center;
+	-fx-text-fill: white;
+	-fx-background-color: grey;
+	-fx-font-weight: bold;
+}
+
+#deleteLabel
+{
+	-fx-text-alignment: center;
+	-fx-text-fill: white;
+	-fx-background-color: grey;
+	-fx-font-weight: bold;
+}
+
+#defaultRadioButton
+{
+	-fx-text-fill: white;
+}
+
+#customRadioButton
+{
+	-fx-text-fill: white;
+}

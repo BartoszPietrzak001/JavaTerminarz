@@ -33,6 +33,12 @@ public class CallendarEvent {
 		return eventDate;
 	}
 	
+	public String getDateString(){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm.SSa");
+		String s = eventDate.format(formatter);
+		return s;
+	}
+	
 	public String getDescription(){
 		return description.toString();
 	}
@@ -40,7 +46,14 @@ public class CallendarEvent {
 	public String getVenue(){
 		return venue.toString();
 	}
+	
+	public void setDescription(String s){
+		description = s;
+	}
 
+	public void setVenue(String s){
+		venue = s;
+	}
 	
 	@Override
 	public String toString(){

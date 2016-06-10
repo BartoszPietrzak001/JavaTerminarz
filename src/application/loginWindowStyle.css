@@ -6,9 +6,10 @@
 #statusLabel
 {
 	-fx-font-weight: bold;
+	-fx-text-fill: white;
 }
 
 .root
 {
-	-fx-background-color: black;
+	-fx-background-color: grey;
 }
