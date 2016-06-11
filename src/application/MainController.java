@@ -112,6 +112,12 @@ public class MainController implements Initializable {
 			
 	}
 	
+	public void calendarOnMouseExited(ActionEvent e){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+		stringBuilder.append(calendar.getValue().format(formatter));
+		eventDate.setText(stringBuilder.toString());
+	}
+	
 	public boolean onLogOut()
 	{
 		Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -299,6 +305,7 @@ public class MainController implements Initializable {
 		hourBox.setItems(hourList);
 		minuteBox.setItems(minuteList);
 		eventListView.setItems(eventList);		
+
 		
 		stringBuilder = new StringBuilder();
 		}
