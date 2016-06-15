@@ -12,8 +12,8 @@
       <AnchorPane prefHeight="465.0" prefWidth="475.0">
          <children>
             <Label fx:id="pathLabel" layoutX="157.0" layoutY="71.0" prefHeight="46.0" prefWidth="163.0" text="Data base path" />
-            <RadioButton fx:id="defaultRadioButton" layoutX="157.0" layoutY="117.0" mnemonicParsing="false" selected="true" text="Default" />
-            <RadioButton fx:id="customRadioButton" layoutX="157.0" layoutY="152.0" mnemonicParsing="false" text="Custom" />
+            <RadioButton fx:id="defaultRadioButton" layoutX="157.0" layoutY="117.0" mnemonicParsing="false" onMouseClicked="#setPathTextFieldFalse" selected="true" text="Default" />
+            <RadioButton fx:id="customRadioButton" layoutX="157.0" layoutY="152.0" mnemonicParsing="false" onMouseClicked="#setPathTextFieldTrue" text="Custom" />
             <TextField fx:id="pathTextField" editable="false" layoutX="142.0" layoutY="202.0" promptText="Path" />
             <Label fx:id="titleLabel" alignment="CENTER" layoutX="104.0" layoutY="14.0" prefHeight="46.0" prefWidth="268.0" text="Settings" textAlignment="CENTER" />
             <Label fx:id="deleteLabel" layoutX="145.0" layoutY="249.0" prefHeight="31.0" prefWidth="187.0" text="Delete events before date:" />

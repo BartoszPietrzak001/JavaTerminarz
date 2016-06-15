@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 public class MainWindow extends Application {
 
 	public static void main(String[] args) {
+		System.out.println("\007");
 		launch(args);
 
 	}

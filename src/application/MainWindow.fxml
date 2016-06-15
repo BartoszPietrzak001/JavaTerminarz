@@ -24,16 +24,14 @@
           <Menu mnemonicParsing="false" text="Calendar">
             <items>
                   <MenuItem mnemonicParsing="false" text="Save" />
-                  <MenuItem mnemonicParsing="false" text="Import" />
+                  <MenuItem fx:id="importButton" mnemonicParsing="false" onAction="#deserializeEvents" text="Import" />
                   <MenuItem fx:id="serializeButton" mnemonicParsing="false" onAction="#serializeEvents" text="Export" />
               <MenuItem fx:id="closeButton" mnemonicParsing="false" onAction="#close" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#editEvent" text="Edit Event" />
-                  <MenuItem mnemonicParsing="false" onAction="#copyEvent" text="Copy Event" />
-              <MenuItem mnemonicParsing="false" onAction="#deleteEvent" text="Delete Event" />
+                  <MenuItem mnemonicParsing="false" text="Undo" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Options">
@@ -49,12 +47,13 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ComboBox fx:id="hourBox" layoutX="66.0" layoutY="152.0" prefHeight="31.0" prefWidth="193.0" promptText="HH" />
       <ComboBox fx:id="minuteBox" layoutX="324.0" layoutY="152.0" prefHeight="31.0" prefWidth="193.0" promptText="MM" />
-      <TextField fx:id="eventDate" editable="false" layoutX="28.0" layoutY="218.0" prefHeight="40.0" prefWidth="528.0" promptText="Date" />
-      <Button fx:id="deleteButton" layoutX="742.0" layoutY="107.0" mnemonicParsing="false" onAction="#deleteEvent" prefHeight="31.0" prefWidth="88.0" text="Delete" />
-      <Button fx:id="editButton" layoutX="872.0" layoutY="107.0" mnemonicParsing="false" onAction="#editEvent" prefHeight="31.0" prefWidth="88.0" text="Edit" />
-      <Button fx:id="copyButton" layoutX="1000.0" layoutY="107.0" mnemonicParsing="false" onAction="#copyEvent" prefHeight="31.0" prefWidth="88.0" text="Copy" />
+      <ComboBox fx:id="hourBox" layoutX="66.0" layoutY="152.0" prefHeight="31.0" prefWidth="193.0" promptText="HH" />
+      <TextField fx:id="eventDate" layoutX="28.0" layoutY="218.0" prefHeight="40.0" prefWidth="528.0" promptText="Date" />
+      <Button fx:id="deleteButton" layoutX="707.0" layoutY="108.0" mnemonicParsing="false" onAction="#deleteEvent" prefHeight="31.0" prefWidth="88.0" text="Delete" />
+      <Button fx:id="editButton" layoutX="804.0" layoutY="107.0" mnemonicParsing="false" onAction="#editEvent" prefHeight="31.0" prefWidth="88.0" text="Edit" />
+      <Button fx:id="copyButton" layoutX="901.0" layoutY="108.0" mnemonicParsing="false" onAction="#copyEvent" prefHeight="31.0" prefWidth="88.0" text="Copy" />
       <Button fx:id="addButton" layoutX="607.0" layoutY="107.0" mnemonicParsing="false" onAction="#addEvent" prefHeight="31.0" prefWidth="88.0" text="Add" />
+      <Button fx:id="undoButton" layoutX="995.0" layoutY="108.0" mnemonicParsing="false" onAction="#undo" prefHeight="31.0" prefWidth="88.0" text="Undo" />
    </children>
 </AnchorPane>

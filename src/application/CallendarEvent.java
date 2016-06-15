@@ -23,6 +23,12 @@ public class CallendarEvent {
 		eventDate = localDateTime;
 	}
 	
+	public CallendarEvent(CallendarEvent ce){
+		this.description = ce.description;
+		this.eventDate = ce.eventDate;
+		this.venue = ce.venue;
+	}
+	
 	public CallendarEvent(){}
 	
 	public void setDate(LocalDateTime d){

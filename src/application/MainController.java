@@ -1,58 +1,46 @@
 package application;
 
-import java.beans.XMLEncoder;
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 import com.thoughtworks.xstream.XStream;
 
+import application.AlertBoxes.AlertBoxType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 public class MainController implements Initializable {
-	@FXML
-	private MenuItem logOutButton;
-	@FXML
-	private MenuItem closeButton;
-	@FXML
-	private MenuItem aboutButton;
-	@FXML
-	private Label aboutLabel;
+
 	
 	private LocalDate localDate;
 	private LocalTime localTime;
@@ -64,6 +52,14 @@ public class MainController implements Initializable {
 	private ObservableList <Integer> minuteList = FXCollections.observableArrayList();
 	private ObservableList <CallendarEvent> eventList = FXCollections.observableArrayList();
 
+	@FXML
+	private MenuItem logOutButton;
+	@FXML
+	private MenuItem closeButton;
+	@FXML
+	private MenuItem aboutButton;
+	@FXML
+	private Label aboutLabel;
 	@FXML
 	private ComboBox <Integer> hourBox;
 	@FXML
@@ -80,68 +76,28 @@ public class MainController implements Initializable {
 	private ListView <CallendarEvent> eventListView;
 	@FXML
 	private DatePicker calendar;
+	@FXML
+	private Button undoButton;
 	
-	public void logOut(ActionEvent event)
-	{
-		if (onLogOut() == true)
-		{
-			Stage stage = (Stage) calendar.getScene().getWindow();
-			stage.close();
-		}
-		else return;
+	private enum undoType{
+		add, delete, edit, copy
 	}
 	
-	public void close(ActionEvent event)
-	{
-		System.exit(0);
-	}
+	private static undoType undoType;
 	
-	public void onAboutClick(ActionEvent event)
-	{
-		Stage primaryStage = new Stage();
-		Parent root;
-		try {
-			root = FXMLLoader.load(getClass().getResource("/application/AboutWindow.fxml"));
-			Scene scene = new Scene(root);
-			scene.getStylesheets().add(getClass().getResource("LoginWindowStyle.css").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.show();	
-		} catch (IOException e) {
-			errorTextField.setText(e.getMessage());
-		}
-			
-	}
-	
-	public void calendarOnMouseExited(ActionEvent e){
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
-		stringBuilder.append(calendar.getValue().format(formatter));
-		eventDate.setText(stringBuilder.toString());
-	}
-	
-	public boolean onLogOut()
-	{
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Confirmation");
-		alert.setHeaderText("Logout confirmation");
-		alert.setContentText("Are you sure you want to logout?");
+	private CallendarEvent buffer;
+	private CallendarEvent editBuffer;
 
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == ButtonType.OK){
-			try {
-				Stage primaryStage = new Stage();
-				Parent root = FXMLLoader.load(getClass().getResource("/application/LoginWindow.fxml"));
-				Scene scene = new Scene(root);
-				scene.getStylesheets().add(getClass().getResource("LoginWindowStyle.css").toExternalForm());
-				primaryStage.setScene(scene);
-				primaryStage.show();				
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-			finally {return true;}
-		} else if (result.get() == ButtonType.CANCEL){
-		    return false;
-		}
-		return true;
+	public void showEvent(MouseEvent e){
+		if (eventListView.getSelectionModel().getSelectedItem() == null) return;
+		CallendarEvent event = eventListView.getSelectionModel().getSelectedItem();
+		
+		eventDate.setEditable(true);
+		
+		eventDate.setText(event.getDateString());
+		eventDescription.setText(event.getDescription());
+		eventVenue.setText(event.getVenue());
+		
 	}
 	
 	public void addEvent(ActionEvent event) throws NullDateException
@@ -160,7 +116,7 @@ public class MainController implements Initializable {
 			
 			if (hourBox.getValue() == null && minuteBox.getValue() == null)
 			{
-					localTime = LocalTime.of(LocalTime.now().plusHours(1).getHour(), 0);
+				localTime = LocalTime.of(LocalTime.now().plusHours(1).getHour(), 0);
 			}
 
 			else if (hourBox.getValue() == null)
@@ -172,27 +128,9 @@ public class MainController implements Initializable {
 			
 			localDateTime = LocalDateTime.of(localDate, localTime);
 			eventList.add(new CallendarEvent(localDateTime, eventDescription.getText(), eventVenue.getText()));
+			undoButton.setDisable(false);
+			undoType = undoType.add;
 		}
-	}
-	
-	public void serializeEvents(ActionEvent e)
-	{
-		XStream xstream = new XStream();
-		
-		try (FileWriter fileWriter = new FileWriter("Events.xml")) {
-			for(CallendarEvent e1 : eventList){
-				xstream.toXML(e1, fileWriter);
-			}
-		} catch (IOException e3) {
-			e3.printStackTrace();
-		}
-
-
-//		try (PrintWriter pr = new PrintWriter("Events.xml");) {
-//			pr.write(stringBuilder.toString());
-//		} catch (FileNotFoundException e2) {
-//			errorTextField.setText("Serialization error");
-//		}
 	}
 	
 	public void editEvent(ActionEvent e)
@@ -200,46 +138,24 @@ public class MainController implements Initializable {
 		if(eventListView.getSelectionModel().getSelectedItem() == null)
 			errorTextField.setText("                   You've not chosen an event to edit!");
 		else{
+			stringBuilder.setLength(0);
 			CallendarEvent event = eventListView.getSelectionModel().getSelectedItem();
-			String date = eventDate.getText();
+			stringBuilder.append(eventDate.getText());
+			
+//			if(hourBox.getValue() != null && minuteBox.getValue() !=null){
+//				stringBuilder.append(hourBox.getValue().toString());
+//			}
 			String description = eventDescription.getText();
 			String venue = eventVenue.getText();
-//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm.SSa"); 
-//			LocalDateTime dateTime = LocalDateTime.parse(date, formatter);
+//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm"); 
+//			LocalDateTime dateTime = LocalDateTime.parse(stringBuilder.toString(), formatter);
 //			event.setDate(dateTime);
 			
 			event.setDescription(description);
 			event.setVenue(venue);
+			undoType = undoType.edit;
+			undoButton.setDisable(false);
 		}
-//
-//		try {
-//			CallendarEvent event = eventListView.getSelectionModel().getSelectedItem();
-//			
-//			Stage primaryStage = new Stage();
-//
-//			FXMLLoader fxmlLoader = new FXMLLoader();
-//			fxmlLoader.setLocation(getClass().getResource("/application/EventEditWindow.fxml"));
-//			
-//			Parent root = fxmlLoader.load();
-//			
-//			
-//			//System.out.println(controller.venueLabel.getText() + "jghj");
-//			
-//			EditController controller = fxmlLoader.getController();
-//			fxmlLoader.setController(controller);
-//			controller.setText(event);
-//
-//			
-//			Scene scene = new Scene(root);
-//			scene.getStylesheets().add(getClass().getResource("editWindowStyle.css").toExternalForm());
-//			primaryStage.setScene(scene);
-//			primaryStage.show();
-//
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//	
 	}
 	
 	public void deleteEvent(ActionEvent e){
@@ -251,21 +167,13 @@ public class MainController implements Initializable {
 		for (CallendarEvent calevent : eventList){
 			if (calevent.equals(event)){
 				eventList.remove(calevent);
+				undoType = undoType.delete;
+				undoButton.setDisable(false);
+				buffer = new CallendarEvent(calevent);
 				return;
 				}
 			}
 		}
-	}
-	
-	public void showEvent(MouseEvent e){
-		CallendarEvent event = eventListView.getSelectionModel().getSelectedItem();
-		
-		eventDate.setEditable(true);
-		
-		eventDate.setText(event.getDateString());
-		eventDescription.setText(event.getDescription());
-		eventVenue.setText(event.getVenue());
-		
 	}
 	
 	public void copyEvent(ActionEvent e){
@@ -273,9 +181,42 @@ public class MainController implements Initializable {
 			errorTextField.setText("                  You've not chosen an event to copy!");
 		else{
 		CallendarEvent event = eventListView.getSelectionModel().getSelectedItem();
-		
+		undoType = undoType.copy;
+		undoButton.setDisable(false);
 		eventList.add(event);
 		}
+	}
+	
+	public void undo(ActionEvent e)
+	{
+		switch(undoType)
+		{
+			case add:
+			case copy:
+			{
+				eventList.remove(eventList.size()-1);
+				break;
+			}
+			case delete:
+			{
+				eventList.add(buffer);
+				break;
+			}
+			case edit:
+			{
+				eventList.remove(editBuffer);
+				eventList.add(buffer);
+				break;
+			}
+		}
+		undoButton.setDisable(true);
+	}
+	
+	public void calendarOnMouseExited(ActionEvent e){
+		stringBuilder.setLength(0);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+		stringBuilder.append(calendar.getValue().format(formatter));
+		eventDate.setText(stringBuilder.toString());
 	}
 	
 	public void openSettingsWindow(ActionEvent e){
@@ -294,7 +235,151 @@ public class MainController implements Initializable {
 		}
 	
 	}
+	
+	public void onAboutClick(ActionEvent event)
+	{
+		Stage primaryStage = new Stage();
+		Parent root;
+		try {
+			root = FXMLLoader.load(getClass().getResource("/application/AboutWindow.fxml"));
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add(getClass().getResource("LoginWindowStyle.css").toExternalForm());
+			primaryStage.setScene(scene);
+			primaryStage.show();	
+		} catch (IOException e) {
+			errorTextField.setText(e.getMessage());
+		}
+			
+	}
+	
+	public void saveEvents(ActionEvent e){
+		for (CallendarEvent event : eventList){
+			
+		}
+	}
+	
+	public void serializeEvents(ActionEvent e)
+	{
+		Alert alert = AlertBoxes.returnAlert(AlertBoxType.toXml);
+		
+		Optional<ButtonType> result = alert.showAndWait();
+		
+		if (result.get() == ButtonType.YES){
 
+			if (eventList.size() == 0){
+				alert.close();
+				Alert serializeError = AlertBoxes.returnAlert(AlertBoxType.nothingToSerialize);
+				
+				Optional<ButtonType> result1 = serializeError.showAndWait();
+			}
+			
+			else{
+				XStream xstream = new XStream();
+				
+				List events = new ArrayList();
+				
+				events.addAll(eventList);
+				
+				try (FileWriter fileWriter = new FileWriter("Events.xml")) {
+					xstream.toXML(events, fileWriter);
+					
+				} catch (IOException e3) {
+					e3.printStackTrace();
+				}
+			}
+		}
+		else return;
+	}
+	
+	public String fileChooser(){
+		FileChooser fc = new FileChooser();
+		File selectedFile = fc.showOpenDialog(null);
+		fc.setTitle("Choose an XML file");
+		fc.setInitialDirectory(new File("C:\\"));
+		fc.getExtensionFilters().addAll(new ExtensionFilter("XML files (*.xml)", "*.xml"));
+		
+		if (selectedFile != null){
+			String extension = selectedFile.getName().substring(
+					selectedFile.getName().lastIndexOf(".") + 1, selectedFile.getName().length());
+			if (extension == "xml")
+				return selectedFile.getAbsolutePath();
+			else return "";
+			
+		}
+		else return "";
+	}
+	
+	public void deserializeEvents(ActionEvent e){
+		XStream xstream = new XStream();
+		List <CallendarEvent> xmlEvents;
+		
+		Alert alert = AlertBoxes.returnAlert(AlertBoxType.fromXml);
+		
+		Optional<ButtonType> result = alert.showAndWait();
+		
+		if (result.get() == ButtonType.NO){
+			try (FileReader fileReader = new FileReader(fileChooser())) {
+				xmlEvents = (List <CallendarEvent>) xstream.fromXML(fileReader);
+				
+				eventList.addAll(xmlEvents);
+			} catch (IOException e3) {
+				e3.printStackTrace();
+			}
+		}
+		else{
+			try (FileReader fileReader = new FileReader("Events.xml")) {
+				xmlEvents = (List <CallendarEvent>) xstream.fromXML(fileReader);
+				eventList.clear();
+				eventList.addAll(xmlEvents);
+			} catch (IOException e3) {
+				e3.printStackTrace();
+			}
+		}
+	}
+
+	public boolean onLogOut()
+	{
+		Alert alert = AlertBoxes.returnAlert(AlertBoxType.logout);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.YES){
+			try {
+				Stage primaryStage = new Stage();
+				Parent root = FXMLLoader.load(getClass().getResource("/application/LoginWindow.fxml"));
+				Scene scene = new Scene(root);
+				scene.getStylesheets().add(getClass().getResource("LoginWindowStyle.css").toExternalForm());
+				primaryStage.setScene(scene);
+				primaryStage.show();				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			finally {return true;}
+		} else if (result.get() == ButtonType.NO){
+		    return false;
+		}
+		return true;
+	}
+	
+	public void logOut(ActionEvent event)
+	{
+		if (onLogOut() == true)
+		{
+			Stage stage = (Stage) calendar.getScene().getWindow();
+			stage.close();
+		}
+		else return;
+	}
+	
+	public void close(ActionEvent event)
+	{
+		Alert alert = AlertBoxes.returnAlert(AlertBoxType.exit);
+		
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == ButtonType.YES)
+			System.exit(0);
+		else return;
+	}
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		for (int i=0; i<=23; i++)
@@ -304,9 +389,10 @@ public class MainController implements Initializable {
 
 		hourBox.setItems(hourList);
 		minuteBox.setItems(minuteList);
-		eventListView.setItems(eventList);		
-
+		eventListView.setItems(eventList);	
 		
 		stringBuilder = new StringBuilder();
+		
+		undoButton.setDisable(true);
 		}
 	}

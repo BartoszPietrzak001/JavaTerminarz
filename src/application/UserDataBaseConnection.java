@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import org.sqlite.SQLiteConfig;
@@ -54,6 +56,39 @@ public class UserDataBaseConnection {
 	    } catch ( Exception e ) {
 	      throw new FileNotFoundException();
 	    }
+	}
+	
+	public Connection loadEvents(String path) throws SQLException{
+		ArrayList<CallendarEvent> list = new ArrayList<CallendarEvent>();
+		
+		try ( Connection conn = DriverManager.getConnection(dbURL);) {
+			Class.forName("org.sqlite.JDBC");
+			SQLiteConfig config = new SQLiteConfig();
+			config.setReadOnly(true);
+			connection = DriverManager.getConnection("jdbc:sqlite:" + path, config.toProperties());
+			stmt = connection.createStatement();
+			return connection;
+			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Connection saveEventsConnection(String path, ArrayList<CallendarEvent> list){
+		try (Connection conn = DriverManager.getConnection(dbURL);){
+			Class.forName("org.sqlite.JDBC");
+			SQLiteConfig config = new SQLiteConfig();
+			config.setReadOnly(false);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return connection;
 	}
 }
 
