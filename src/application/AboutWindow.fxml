@@ -5,8 +5,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.60">
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="800.0">
          <children>
@@ -15,7 +14,7 @@
                   <Insets left="30.0" />
                </padding>
             </TextArea>
-            <Label fx:id="aboutLabel" alignment="CENTER" layoutX="298.0" layoutY="45.0" prefHeight="38.0" prefWidth="204.0" text="About" textAlignment="CENTER" textFill="RED" />
+            <Label fx:id="aboutLabel" alignment="CENTER" layoutX="332.0" layoutY="50.0" prefHeight="42.0" prefWidth="137.0" text="About " textFill="WHITE" />
          </children>
       </AnchorPane>
    </children>
