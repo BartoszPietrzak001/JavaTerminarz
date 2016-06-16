@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javax.persistence.criteria.CriteriaBuilder.Case;
+
 import com.thoughtworks.xstream.XStream;
 
 import application.AlertBoxes.AlertBoxType;
@@ -48,6 +50,8 @@ public class MainController implements Initializable {
 
 	private StringBuilder stringBuilder;
 	
+	private String filePath;
+	
 	private ObservableList <Integer> hourList = FXCollections.observableArrayList();
 	private ObservableList <Integer> minuteList = FXCollections.observableArrayList();
 	private ObservableList <CallendarEvent> eventList = FXCollections.observableArrayList();
@@ -81,6 +85,10 @@ public class MainController implements Initializable {
 	
 	private enum undoType{
 		add, delete, edit, copy
+	}
+	
+	private enum fileChooserType{
+		save, open
 	}
 	
 	private static undoType undoType;
@@ -274,39 +282,57 @@ public class MainController implements Initializable {
 			}
 			
 			else{
-				XStream xstream = new XStream();
-				
-				List events = new ArrayList();
-				
-				events.addAll(eventList);
-				
-				try (FileWriter fileWriter = new FileWriter("Events.xml")) {
-					xstream.toXML(events, fileWriter);
+				filePath = fileChooser(fileChooserType.save);
+				if (filePath != null){
+					XStream xstream = new XStream();
 					
-				} catch (IOException e3) {
-					e3.printStackTrace();
+					List events = new ArrayList();
+					
+					events.addAll(eventList);
+					
+					try (FileWriter fileWriter = new FileWriter(filePath)) {
+						xstream.toXML(events, fileWriter);
+						
+					} catch (IOException e3) {
+						e3.printStackTrace();
+					}
 				}
 			}
 		}
 		else return;
 	}
 	
-	public String fileChooser(){
-		FileChooser fc = new FileChooser();
-		File selectedFile = fc.showOpenDialog(null);
-		fc.setTitle("Choose an XML file");
+	public String fileChooser(fileChooserType type){
+		final FileChooser fc = new FileChooser();
+		final File selectedFile;
 		fc.setInitialDirectory(new File("C:\\"));
-		fc.getExtensionFilters().addAll(new ExtensionFilter("XML files (*.xml)", "*.xml"));
+		fc.getExtensionFilters().addAll(new ExtensionFilter("XML files (*.xml)", "*.xml"), 
+										new ExtensionFilter ("ICS files (*.ics)", "*.ics"));
 		
-		if (selectedFile != null){
-			String extension = selectedFile.getName().substring(
-					selectedFile.getName().lastIndexOf(".") + 1, selectedFile.getName().length());
-			if (extension == "xml")
-				return selectedFile.getAbsolutePath();
-			else return "";
-			
+		switch(type)
+		{
+			case open:
+			{
+				fc.setTitle("Choose an XML file");				
+				selectedFile = fc.showOpenDialog(null);
+				if (selectedFile != null){
+					return selectedFile.getAbsolutePath();
+				}
+					else return null;
+			}
+			case save:
+			{
+				fc.setTitle("Choose location to save a file");
+				
+				selectedFile = fc.showSaveDialog(null);
+				
+				if (selectedFile != null){
+					return selectedFile.getAbsolutePath();
+				}
+				else return null;
+			}			
 		}
-		else return "";
+		return null;
 	}
 	
 	public void deserializeEvents(ActionEvent e){
@@ -318,21 +344,28 @@ public class MainController implements Initializable {
 		Optional<ButtonType> result = alert.showAndWait();
 		
 		if (result.get() == ButtonType.NO){
-			try (FileReader fileReader = new FileReader(fileChooser())) {
-				xmlEvents = (List <CallendarEvent>) xstream.fromXML(fileReader);
-				
-				eventList.addAll(xmlEvents);
-			} catch (IOException e3) {
-				e3.printStackTrace();
+			filePath = fileChooser(fileChooserType.open);
+			if (filePath != null){
+				try (FileReader fileReader = new FileReader(filePath)) {
+	
+					xmlEvents = (List <CallendarEvent>) xstream.fromXML(fileReader);
+					
+					eventList.addAll(xmlEvents);
+				} catch (IOException e3) {
+					e3.printStackTrace();
+				}
 			}
 		}
 		else{
-			try (FileReader fileReader = new FileReader("Events.xml")) {
-				xmlEvents = (List <CallendarEvent>) xstream.fromXML(fileReader);
-				eventList.clear();
-				eventList.addAll(xmlEvents);
-			} catch (IOException e3) {
-				e3.printStackTrace();
+			filePath = fileChooser(fileChooserType.open);
+			if (filePath != null){
+				try (FileReader fileReader = new FileReader(filePath)) {
+					xmlEvents = (List <CallendarEvent>) xstream.fromXML(fileReader);
+					eventList.clear();
+					eventList.addAll(xmlEvents);
+				} catch (IOException e3) {
+					e3.printStackTrace();
+				}
 			}
 		}
 	}
