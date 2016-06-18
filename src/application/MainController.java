@@ -83,12 +83,16 @@ public class MainController implements Initializable {
 	@FXML
 	private Button undoButton;
 	
-	private enum undoType{
+	private static enum undoType{
 		add, delete, edit, copy
 	}
 	
-	private enum fileChooserType{
+	private static enum fileChooserType{
 		save, open
+	}
+	
+	public fileChooserType getFileChooserTypeSave(){
+		return fileChooserType.save;
 	}
 	
 	private static undoType undoType;

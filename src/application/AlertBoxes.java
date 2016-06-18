@@ -13,7 +13,7 @@ public class AlertBoxes extends Alert {
 	}
 
 	public static enum AlertBoxType{
-		exit, toXml, fromXml, logout, toIcs, fromIcs, save, nothingToSerialize
+		exit, toXml, fromXml, logout, toIcs, fromIcs, save, nothingToSerialize, saveChanges
 	}
 	
 	public static Alert returnAlert(AlertBoxType type){
@@ -74,6 +74,14 @@ public class AlertBoxes extends Alert {
 				contentText = new String("I have nothing to serialize!");
 				
 				Alert alert = new Alert(Alert.AlertType.ERROR, contentText, ButtonType.OK);
+				
+				return alert;
+			}
+			case saveChanges:
+			{
+				contentText = new String("Save changes?");
+				
+				Alert alert = new Alert(Alert.AlertType.CONFIRMATION, contentText, ButtonType.YES, ButtonType.NO);
 				
 				return alert;
 			}

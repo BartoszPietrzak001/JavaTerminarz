@@ -81,6 +81,14 @@ public class UserDataBaseConnection {
 			Class.forName("org.sqlite.JDBC");
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(false);
+			StringBuilder strBuilder = new StringBuilder();
+			String query = new String("INSERT INTO Events (EventDate, EventDescription, EventVenue, UserName)"
+					+ "VALUES(");
+			
+			for (CallendarEvent event : list){
+				strBuilder.append(query + "'" + event.getDateString() + "', '" + event.getDescription() + "', '" + 
+								  event.getVenue() + "', '" + ApplicationSettings.getLogin() + "');\n");
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

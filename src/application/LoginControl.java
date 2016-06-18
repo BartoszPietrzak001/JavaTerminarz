@@ -28,7 +28,7 @@ public class LoginControl {
 	{
 		UserDataBaseConnection conn = new UserDataBaseConnection();
 		try {
-			if (conn.connectLogin(ApplicationSettings.getFilePath()) != null){
+			if (conn.connectLogin("users.sqlite") != null){
 				if (userNameField.getText().equals("user") && passwordField.getText().equals("pass"))
 				{
 					statusLabel.setText("Login Success");
@@ -51,6 +51,7 @@ public class LoginControl {
 	
 	public void loginSuccessed()
 	{
+		SettingsController.load();
 			try {
 				Stage primaryStage = new Stage();
 				Parent root = FXMLLoader.load(getClass().getResource("/application/MainWindow.fxml"));
