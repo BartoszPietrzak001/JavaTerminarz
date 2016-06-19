@@ -2,6 +2,7 @@ package application;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -61,9 +62,14 @@ public class CallendarEvent {
 		venue = s;
 	}
 	
+	public void stringToDate(String s){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm.ssa");
+		eventDate = LocalDateTime.parse(s, formatter);
+	}
+	
 	@Override
 	public String toString(){
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm.SSa");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mma");
 		String s = eventDate.format(formatter);
 		return "Date: " + s + " Description: " + description + " Venue: " + venue;
 	}

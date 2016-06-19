@@ -51,7 +51,7 @@ public class RegistrationController implements Initializable {
 			errorLabel.setText("All labels have to be filled with data!");
 		else{
 		UserDataBaseConnection conn = new UserDataBaseConnection();
-			if(conn.connectRegister("Users.sqlite") != null){
+			if(conn.connectRegister(ApplicationSettings.getFilePath()) != null){
 
 				String query = "INSERT INTO users(UserName, Password, Email) VALUES ('" +
 						userNameLabel.getText() + "','" + passwordLabel.getText() + "','" + 

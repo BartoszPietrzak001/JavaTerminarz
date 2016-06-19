@@ -51,6 +51,7 @@ public class LoginControl {
 	
 	public void loginSuccessed()
 	{
+		ApplicationSettings.setLogin(userNameField.getText());
 		SettingsController.load();
 			try {
 				Stage primaryStage = new Stage();

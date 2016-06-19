@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class UserDataBaseConnection {
 	    }
 	}
 	
-	public Connection loadEvents(String path) throws SQLException{
+	public Connection loadEventsConnection(String path){
 		ArrayList<CallendarEvent> list = new ArrayList<CallendarEvent>();
 		
 		try ( Connection conn = DriverManager.getConnection(dbURL);) {
@@ -72,23 +73,19 @@ public class UserDataBaseConnection {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	public Connection saveEventsConnection(String path, ArrayList<CallendarEvent> list){
+	public Connection saveEventsConnection(String path){
 		try (Connection conn = DriverManager.getConnection(dbURL);){
 			Class.forName("org.sqlite.JDBC");
 			SQLiteConfig config = new SQLiteConfig();
 			config.setReadOnly(false);
-			StringBuilder strBuilder = new StringBuilder();
-			String query = new String("INSERT INTO Events (EventDate, EventDescription, EventVenue, UserName)"
-					+ "VALUES(");
-			
-			for (CallendarEvent event : list){
-				strBuilder.append(query + "'" + event.getDateString() + "', '" + event.getDescription() + "', '" + 
-								  event.getVenue() + "', '" + ApplicationSettings.getLogin() + "');\n");
-			}
+			connection = DriverManager.getConnection("jdbc:sqlite:" + path, config.toProperties());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

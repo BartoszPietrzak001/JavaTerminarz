@@ -97,11 +97,11 @@ public class SettingsController implements Initializable {
 			e1.printStackTrace();
 		}
 		
-		if (loadedSettings.getInnerLocalDate() == null) return;
-		else
+		if(loadedSettings == null) return;
+		
+		if (loadedSettings.getInnerLocalDate() != null)
 			ApplicationSettings.setDate(loadedSettings.getInnerLocalDate());
-		if (loadedSettings.getInnerString() == null) return;
-		else{
+		if (loadedSettings.getInnerString() != null){
 			ApplicationSettings.setFilePath(loadedSettings.getInnerString());
 			ApplicationSettings.setDefaultCustom(loadedSettings.getInnerDefaultCustom());
 		}

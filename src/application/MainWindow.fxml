@@ -23,7 +23,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="Calendar">
             <items>
-                  <MenuItem mnemonicParsing="false" text="Save" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveEvents" text="Save" />
                   <MenuItem fx:id="importButton" mnemonicParsing="false" onAction="#deserializeEvents" text="Import" />
                   <MenuItem fx:id="serializeButton" mnemonicParsing="false" onAction="#serializeEvents" text="Export" />
               <MenuItem fx:id="closeButton" mnemonicParsing="false" onAction="#close" text="Close" />

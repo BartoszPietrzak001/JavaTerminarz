@@ -5,16 +5,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
-import javax.persistence.criteria.CriteriaBuilder.Case;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -265,8 +267,72 @@ public class MainController implements Initializable {
 	}
 	
 	public void saveEvents(ActionEvent e){
-		for (CallendarEvent event : eventList){
+		UserDataBaseConnection connection = new UserDataBaseConnection();
+		Connection conn;
+		
+		if (connection.saveEventsConnection(ApplicationSettings.getFilePath()) != null){
+			conn = connection.saveEventsConnection(ApplicationSettings.getFilePath());
+			StringBuilder strBuilder = new StringBuilder();
+			String query = new String("INSERT INTO Events (EventDate, EventDescription, EventVenue, UserName)"
+					+ "VALUES(");
 			
+			for (CallendarEvent event : eventList){
+				strBuilder.setLength(0);
+				strBuilder.append(query + "'" + event.getDateString() + "', '" + event.getDescription() + "', '" + 
+								  event.getVenue() + "', '" + ApplicationSettings.getLogin() + "');d");
+				
+				try {
+					connection.stmt = conn.createStatement();
+					connection.stmt.execute(strBuilder.toString());
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}			
+		}
+	}
+	
+	public void loadEvents(){
+		UserDataBaseConnection connection = new UserDataBaseConnection();
+		Connection conn;
+		ResultSet rs;
+		CallendarEvent event;
+		
+		if (connection.loadEventsConnection(ApplicationSettings.getFilePath()) != null){
+			conn = connection.saveEventsConnection(ApplicationSettings.getFilePath());
+			StringBuilder strBuilder = new StringBuilder();
+			
+			strBuilder.append("SELECT * FROM EVENTS WHERE UserName = '" + ApplicationSettings.getLogin() + "'");
+			
+			try {
+				rs = connection.stmt.executeQuery(strBuilder.toString());
+				while (rs.next()){
+					event = new CallendarEvent();
+					event.stringToDate(rs.getString("EventDate"));
+					event.setDescription(rs.getString("EventDescription"));
+					event.setVenue(rs.getString("EventVenue"));
+					eventList.add(event);
+				}
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			if (ApplicationSettings.getDate() != null){
+				Alert alert = AlertBoxes.returnAlert(AlertBoxType.eventsBeforeDate);
+				
+				Optional<ButtonType> result = alert.showAndWait();
+				
+				if (result.get() == ButtonType.YES){
+					for (CallendarEvent e : eventList){
+						LocalDate date = LocalDate.of(e.getDate().getYear(), 
+								e.getDate().getMonthValue(), e.getDate().getDayOfMonth());
+						if (date.isBefore(ApplicationSettings.getDate())){
+							eventList.remove(e);
+						}
+					}
+				}
+			}		
 		}
 	}
 	
@@ -431,5 +497,7 @@ public class MainController implements Initializable {
 		stringBuilder = new StringBuilder();
 		
 		undoButton.setDisable(true);
+		
+		loadEvents();
 		}
 	}

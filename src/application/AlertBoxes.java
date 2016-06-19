@@ -1,5 +1,6 @@
 package application;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import javafx.scene.control.Alert;
@@ -13,7 +14,7 @@ public class AlertBoxes extends Alert {
 	}
 
 	public static enum AlertBoxType{
-		exit, toXml, fromXml, logout, toIcs, fromIcs, save, nothingToSerialize, saveChanges
+		exit, toXml, fromXml, logout, toIcs, fromIcs, save, nothingToSerialize, saveChanges, eventsBeforeDate
 	}
 	
 	public static Alert returnAlert(AlertBoxType type){
@@ -80,6 +81,16 @@ public class AlertBoxes extends Alert {
 			case saveChanges:
 			{
 				contentText = new String("Save changes?");
+				
+				Alert alert = new Alert(Alert.AlertType.CONFIRMATION, contentText, ButtonType.YES, ButtonType.NO);
+				
+				return alert;
+			}
+			case eventsBeforeDate:
+			{
+//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-mm-dd");
+//				String date = new String(ApplicationSettings.getDate().format(formatter));
+				contentText = new String("Delete events before date: "+ "?");
 				
 				Alert alert = new Alert(Alert.AlertType.CONFIRMATION, contentText, ButtonType.YES, ButtonType.NO);
 				
