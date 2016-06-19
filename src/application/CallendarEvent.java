@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
-public class CallendarEvent {
+public class CallendarEvent implements Comparable<CallendarEvent> {
 	private LocalDateTime eventDate;
 	private String description;
 	private String venue;
@@ -77,5 +77,10 @@ public class CallendarEvent {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mma");
 		String s = eventDate.format(formatter);
 		return "Date: " + s + " Description: " + description + " Venue: " + venue;
+	}
+
+	@Override
+	public int compareTo(CallendarEvent event) {
+		return this.eventDate.compareTo(event.eventDate);
 	}
 }

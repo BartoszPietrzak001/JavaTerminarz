@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -143,6 +144,7 @@ public class MainController implements Initializable {
 			
 			localDateTime = LocalDateTime.of(localDate, localTime);
 			eventList.add(new CallendarEvent(localDateTime, eventDescription.getText(), eventVenue.getText()));
+			sortEvents();
 			undoButton.setDisable(false);
 			undoType = undoType.add;
 		}
@@ -153,21 +155,27 @@ public class MainController implements Initializable {
 		if(eventListView.getSelectionModel().getSelectedItem() == null)
 			errorTextField.setText("                   You've not chosen an event to edit!");
 		else{
-			stringBuilder.setLength(0);
-			CallendarEvent event = eventListView.getSelectionModel().getSelectedItem();
-			stringBuilder.append(eventDate.getText());
-			
-//			if(hourBox.getValue() != null && minuteBox.getValue() !=null){
-//				stringBuilder.append(hourBox.getValue().toString());
-//			}
+			CallendarEvent bufferEvent = eventListView.getSelectionModel().getSelectedItem();
+			editBuffer = new CallendarEvent(bufferEvent);
+			System.out.println(editBuffer.toString());
+			CallendarEvent event;
 			String description = eventDescription.getText();
 			String venue = eventVenue.getText();
-//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm"); 
-//			LocalDateTime dateTime = LocalDateTime.parse(stringBuilder.toString(), formatter);
-//			event.setDate(dateTime);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm.ssa"); 
+			LocalDateTime dateTime = LocalDateTime.parse(eventDate.getText(), formatter);
 			
-			event.setDescription(description);
-			event.setVenue(venue);
+			bufferEvent.setDate(dateTime);
+			bufferEvent.setDescription(description);
+			bufferEvent.setVenue(venue);
+			
+			event = new CallendarEvent(bufferEvent);
+			
+			buffer = event;
+			
+			eventList.remove(bufferEvent);
+			
+			eventList.add(event);
+			
 			undoType = undoType.edit;
 			undoButton.setDisable(false);
 		}
@@ -202,6 +210,14 @@ public class MainController implements Initializable {
 		}
 	}
 	
+	public void onSortClick(ActionEvent e){
+		sortEvents();
+	}
+	
+	public void sortEvents(){
+		Collections.sort(eventList);
+	}
+	
 	public void undo(ActionEvent e)
 	{
 		switch(undoType)
@@ -215,12 +231,16 @@ public class MainController implements Initializable {
 			case delete:
 			{
 				eventList.add(buffer);
+				sortEvents();
 				break;
 			}
 			case edit:
 			{
-				eventList.remove(editBuffer);
-				eventList.add(buffer);
+				if (buffer == null) break;
+				System.out.println(editBuffer.toString());
+				eventList.remove(buffer);
+				eventList.add(editBuffer);
+				sortEvents();
 				break;
 			}
 		}
@@ -267,7 +287,27 @@ public class MainController implements Initializable {
 			
 	}
 	
+	public void clearDataBase(){
+		UserDataBaseConnection connection = new UserDataBaseConnection();
+		Connection conn;
+		
+		if (connection.saveEventsConnection(ApplicationSettings.getFilePath()) != null){
+			conn = connection.saveEventsConnection(ApplicationSettings.getFilePath());
+			StringBuilder strBuilder = new StringBuilder();
+			String query = new String("Delete from Events");
+			
+			try {
+				connection.stmt = conn.createStatement();
+				connection.stmt.execute(query);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void saveEvents(ActionEvent e){
+		clearDataBase();
 		UserDataBaseConnection connection = new UserDataBaseConnection();
 		Connection conn;
 		
@@ -280,7 +320,7 @@ public class MainController implements Initializable {
 			for (CallendarEvent event : eventList){
 				strBuilder.setLength(0);
 				strBuilder.append(query + "'" + event.getDateString() + "', '" + event.getDescription() + "', '" + 
-								  event.getVenue() + "', '" + ApplicationSettings.getLogin() + "');d");
+								  event.getVenue() + "', '" + ApplicationSettings.getLogin() + "');");
 				
 				try {
 					connection.stmt = conn.createStatement();
@@ -499,5 +539,9 @@ public class MainController implements Initializable {
 		undoButton.setDisable(true);
 		
 		loadEvents();
-		}
+		sortEvents();
+		
+		Thread t = new Thread(new Reminder(10000, eventList));
+		t.start();
 	}
+}

@@ -14,7 +14,7 @@ public class AlertBoxes extends Alert {
 	}
 
 	public static enum AlertBoxType{
-		exit, toXml, fromXml, logout, toIcs, fromIcs, save, nothingToSerialize, saveChanges, eventsBeforeDate
+		exit, toXml, fromXml, logout, toIcs, fromIcs, save, nothingToSerialize, saveChanges, eventsBeforeDate, eventAwaiting
 	}
 	
 	public static Alert returnAlert(AlertBoxType type){
@@ -88,11 +88,17 @@ public class AlertBoxes extends Alert {
 			}
 			case eventsBeforeDate:
 			{
-//				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-mm-dd");
-//				String date = new String(ApplicationSettings.getDate().format(formatter));
-				contentText = new String("Delete events before date: "+ "?");
+				contentText = new String("Delete events before date: " + ApplicationSettings.getDateString() + "?");
 				
 				Alert alert = new Alert(Alert.AlertType.CONFIRMATION, contentText, ButtonType.YES, ButtonType.NO);
+				
+				return alert;
+			}
+			case eventAwaiting:
+			{
+				contentText = new String("You have an event awaiting!");
+				
+				Alert alert = new Alert(Alert.AlertType.INFORMATION, contentText, ButtonType.OK);
 				
 				return alert;
 			}

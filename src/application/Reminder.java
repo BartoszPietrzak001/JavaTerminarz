@@ -3,8 +3,12 @@ package application;
 import java.io.File;
 import java.io.InputStream;
 import java.security.AccessControlContext;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,7 +41,13 @@ import com.sun.javafx.tk.TKStage;
 import com.sun.javafx.tk.TKSystemMenu;
 import com.sun.javafx.tk.Toolkit;
 
+import application.AlertBoxes.AlertBoxType;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.geometry.Dimension2D;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.InputMethodRequests;
@@ -57,28 +67,40 @@ import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class ReminderBeep{
-	  Toolkit toolkit;
+public class Reminder implements Runnable {
+	private ObservableList<CallendarEvent> events;
+	private int seconds;
 
-	  Timer timer;
+	public Reminder(int seconds, ObservableList<CallendarEvent> events) {
+		this.seconds = seconds;
+		this.events = events;
+	}
 
-	  public ReminderBeep(int seconds) {
-	    toolkit = Toolkit.getToolkit();	    
-	    timer = new Timer();	    
-	    timer.schedule(new RemindTask(), seconds);
-	  }
-	  
-	  public void alarm(){
-		  
-	  }
+	public void setEvents(ObservableList<CallendarEvent> events) {
+		this.events = events;
+	}
 
-	  class RemindTask extends TimerTask {
-	    public void run() {
-	      System.out.println("Time's up!");
-	      toolkit = Toolkit.getToolkit();
-	      //timer.cancel(); //Not necessary because we call System.exit
-	      System.exit(0); //Stops the AWT thread (and everything else)
-	    }
-	  }
+	@Override
+	public void run() {
+		while(true){
+		try {
+			Thread.sleep(seconds);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for (CallendarEvent event : events) {
+			long minutes = ChronoUnit.MINUTES.between(LocalDateTime.now(), event.getDate());
+			if (minutes < 60) {
+				Alert alert = AlertBoxes.returnAlert(AlertBoxType.eventAwaiting);
 
+				Optional<ButtonType> result = alert.showAndWait();
+
+				if (result.get() == ButtonType.OK) {
+					alert.close();
+				}
+			}
+		}
+	}
+	}
 }

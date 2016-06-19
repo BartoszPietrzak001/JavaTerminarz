@@ -3,6 +3,7 @@ package application;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -16,6 +17,12 @@ public class ApplicationSettings {
 	
 	public static LocalDate getDate(){
 		return localDate;
+	}
+	
+	public static String getDateString(){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String s = localDate.format(formatter);
+		return s;
 	}
 	
 	public static boolean getDefaultCustom(){
