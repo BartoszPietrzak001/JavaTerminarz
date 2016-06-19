@@ -40,6 +40,11 @@ public class CallendarEvent {
 		return eventDate;
 	}
 	
+	public LocalDate getLocalDate(){
+		LocalDate date = LocalDate.of(eventDate.getYear(), eventDate.getMonthValue(), eventDate.getDayOfMonth());
+		return date;
+	}
+	
 	public String getDateString(){
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm.SSa");
 		String s = eventDate.format(formatter);

@@ -105,7 +105,8 @@ public class SettingsController implements Initializable {
 			ApplicationSettings.setFilePath(loadedSettings.getInnerString());
 			ApplicationSettings.setDefaultCustom(loadedSettings.getInnerDefaultCustom());
 		}
-			
+		if (loadedSettings.getInnerString() == null)
+			ApplicationSettings.setFilePath("Users.sqlite");
 }
 	
 	private static class SettingsClass{

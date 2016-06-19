@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.XStream;
 public class ApplicationSettings {
 	
 	private static LocalDate localDate;
-	private static String filePath;
+	private static String filePath = "Users.sqlite";
 	private static boolean defaultCustom;
 	
 	private static String login;

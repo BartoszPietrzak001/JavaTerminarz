@@ -14,6 +14,7 @@ import java.time.LocalTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -302,7 +303,7 @@ public class MainController implements Initializable {
 			conn = connection.saveEventsConnection(ApplicationSettings.getFilePath());
 			StringBuilder strBuilder = new StringBuilder();
 			
-			strBuilder.append("SELECT * FROM EVENTS WHERE UserName = '" + ApplicationSettings.getLogin() + "'");
+			strBuilder.append("SELECT * FROM Events WHERE UserName = '" + ApplicationSettings.getLogin() + "'");
 			
 			try {
 				rs = connection.stmt.executeQuery(strBuilder.toString());
@@ -324,17 +325,16 @@ public class MainController implements Initializable {
 				Optional<ButtonType> result = alert.showAndWait();
 				
 				if (result.get() == ButtonType.YES){
-					for (CallendarEvent e : eventList){
-						LocalDate date = LocalDate.of(e.getDate().getYear(), 
-								e.getDate().getMonthValue(), e.getDate().getDayOfMonth());
-						if (date.isBefore(ApplicationSettings.getDate())){
-							eventList.remove(e);
-						}
-					}
+					Iterator<CallendarEvent> iter = eventList.iterator();
+					while(iter.hasNext()){
+						LocalDate date = iter.next().getLocalDate();
+					    if(date.isBefore(ApplicationSettings.getDate()))
+					        iter.remove();
 				}
-			}		
+			}
 		}
 	}
+}
 	
 	public void serializeEvents(ActionEvent e)
 	{
